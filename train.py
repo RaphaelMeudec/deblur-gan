@@ -34,9 +34,9 @@ def train_multiple_outputs(n_images, batch_size, epoch_num, critic_updates=5):
     d_on_g_opt = Adam(lr=1E-4, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
 
     d.trainable = True
-    d.compile(optimizer=d_opt, loss='mean_absolute_error')
+    d.compile(optimizer=d_opt, loss=wasserstein_loss)
     d.trainable = False
-    loss = [perceptual_loss, 'mean_absolute_error']
+    loss = [perceptual_loss, wasserstein_loss]
     loss_weights = [100, 1]
     d_on_g.compile(optimizer=d_on_g_opt, loss=loss, loss_weights=loss_weights)
     d.trainable = True

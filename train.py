@@ -48,8 +48,6 @@ def train_multiple_outputs(n_images, batch_size, epoch_num, critic_updates=5):
             if index < 10:
                 print(np.min(generated_images), np.max(generated_images))
 
-            # x = np.concatenate((image_full_batch, generated_images))
-
             for _ in range(critic_updates):
                 d_loss_real = d.train_on_batch(image_full_batch, output_true_batch)
                 d_loss_fake = d.train_on_batch(generated_images, output_false_batch)
@@ -60,9 +58,6 @@ def train_multiple_outputs(n_images, batch_size, epoch_num, critic_updates=5):
 
             d_on_g_loss = d_on_g.train_on_batch(image_blur_batch, [image_full_batch, output_true_batch])
             print('batch {} d_on_g_loss : {}'.format(index+1, d_on_g_loss))
-
-            # g_loss = g.train_on_batch(image_blur_batch, )
-            # print('batch {} g_loss : {}'.format(index+1, g_loss))
 
             d.trainable = True
 

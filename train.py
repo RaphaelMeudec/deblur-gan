@@ -1,4 +1,5 @@
 import os
+import datetime
 import click
 import numpy as np
 from PIL import Image
@@ -8,6 +9,16 @@ from losses import adversarial_loss, generator_loss, wasserstein_loss, perceptua
 from model import generator_model, discriminator_model, generator_containing_discriminator, generator_containing_discriminator_multiple_outputs
 
 from keras.optimizers import Adam
+
+BASE_DIR = 'weights/'
+
+def save_all_weights(d, g, epoch_number):
+    now = datetime.datetime.now()
+    save_dir = os.path.join(BASE_DIR, '{}{}'.format(now.month, now.day))
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+    g.save_weights(os.path.join(save_dir, 'generator_{}.h5'.format(epoch_number)), True)
+    d.save_weights(os.path.join(save_dir, 'discriminator_{}.h5'.format(epoch_number)), True)
 
 
 def train_multiple_outputs(n_images, batch_size, epoch_num, critic_updates=5):
@@ -61,8 +72,7 @@ def train_multiple_outputs(n_images, batch_size, epoch_num, critic_updates=5):
 
             d.trainable = True
 
-        g.save_weights('generator.h5', True)
-        d.save_weights('discriminator.h5', True)
+        save_all_weights(d, g, epoch)
 
 @click.command()
 @click.option('--n_images', default=16, help='Number of images to load for training')

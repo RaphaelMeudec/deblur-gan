@@ -12,12 +12,12 @@ from keras.optimizers import Adam
 
 BASE_DIR = 'weights/'
 
-def save_all_weights(d, g, epoch_number):
+def save_all_weights(d, g, epoch_number, current_loss):
     now = datetime.datetime.now()
     save_dir = os.path.join(BASE_DIR, '{}{}'.format(now.month, now.day))
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
-    g.save_weights(os.path.join(save_dir, 'generator_{}.h5'.format(epoch_number)), True)
+    g.save_weights(os.path.join(save_dir, 'generator_{}_{}.h5'.format(epoch_number, current_loss)), True)
     d.save_weights(os.path.join(save_dir, 'discriminator_{}.h5'.format(epoch_number)), True)
 
 
@@ -71,6 +71,9 @@ def train_multiple_outputs(n_images, batch_size, epoch_num, critic_updates=5):
             print('batch {} d_on_g_loss : {}'.format(index+1, d_on_g_loss))
 
             d.trainable = True
+
+        with open('log.txt', 'a') as f:
+            f.write('{} - {} - {}\n'.format(epoch, d_loss, d_on_g_loss))
 
         save_all_weights(d, g, epoch)
 

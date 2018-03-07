@@ -50,6 +50,8 @@ def train_multiple_outputs(n_images, batch_size, epoch_num, critic_updates=5):
 
         permutated_indexes = np.random.permutation(x_train.shape[0])
 
+        d_losses = []
+        d_on_g_losses = []
         for index in range(int(x_train.shape[0] / batch_size)):
             batch_indexes = permutated_indexes[index*batch_size:(index+1)*batch_size]
             image_blur_batch = x_train[batch_indexes]
@@ -57,7 +59,6 @@ def train_multiple_outputs(n_images, batch_size, epoch_num, critic_updates=5):
 
             generated_images = g.predict(x=image_blur_batch, batch_size=batch_size)
 
-            d_losses = []
             for _ in range(critic_updates):
                 d_loss_real = d.train_on_batch(image_full_batch, output_true_batch)
                 d_loss_fake = d.train_on_batch(generated_images, output_false_batch)
@@ -68,17 +69,18 @@ def train_multiple_outputs(n_images, batch_size, epoch_num, critic_updates=5):
             d.trainable = False
 
             d_on_g_loss = d_on_g.train_on_batch(image_blur_batch, [image_full_batch, output_true_batch])
+            d_on_g_losses.append(d_on_g_loss)
             print('batch {} d_on_g_loss : {}'.format(index+1, d_on_g_loss))
 
             d.trainable = True
 
         with open('log.txt', 'a') as f:
-            f.write('{} - {} - {}\n'.format(epoch, d_loss, d_on_g_loss))
+            f.write('{} - {} - {}\n'.format(epoch, np.mean(d_losses), np.mean(d_on_g_losses)))
 
-        save_all_weights(d, g, epoch)
+        save_all_weights(d, g, epoch, int(np.mean(d_on_g_losses)))
 
 @click.command()
-@click.option('--n_images', default=16, help='Number of images to load for training')
+@click.option('--n_images', default=-1, help='Number of images to load for training')
 @click.option('--batch_size', default=16, help='Size of batch')
 @click.option('--epoch_num', default=4, help='Number of epochs for training')
 @click.option('--critic_updates', default=5, help='Number of discriminator training')

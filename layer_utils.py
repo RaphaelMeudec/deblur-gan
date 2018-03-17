@@ -8,7 +8,8 @@ from keras.layers.merge import Add
 from keras.utils import conv_utils
 from keras.layers.core import Dropout
 
-def res_block(input, filters, kernel_size=(3,3), strides=(1,1), use_dropout=False):
+
+def res_block(input, filters, kernel_size=(3, 3), strides=(1, 1), use_dropout=False):
     """
     Instanciate a Keras Resnet Block using sequential API.
 
@@ -19,20 +20,20 @@ def res_block(input, filters, kernel_size=(3,3), strides=(1,1), use_dropout=Fals
     :param use_dropout: Boolean value to determine the use of dropout
     :return: Keras Model
     """
-    x = ReflectionPadding2D((1,1))(input)
+    x = ReflectionPadding2D((1, 1))(input)
     x = Conv2D(filters=filters,
-                kernel_size=kernel_size,
-                strides=strides,)(x)
+               kernel_size=kernel_size,
+               strides=strides,)(x)
     x = BatchNormalization()(x)
     x = Activation('relu')(x)
 
     if use_dropout:
         x = Dropout(0.5)(x)
 
-    x = ReflectionPadding2D((1,1))(x)
+    x = ReflectionPadding2D((1, 1))(x)
     x = Conv2D(filters=filters,
-                kernel_size=kernel_size,
-                strides=strides,)(x)
+               kernel_size=kernel_size,
+               strides=strides,)(x)
     x = BatchNormalization()(x)
 
     merged = Add()([input, x])
@@ -164,14 +165,15 @@ class ReflectionPadding2D(Layer):
 
     def call(self, inputs):
         return spatial_reflection_2d_padding(inputs,
-                                    padding=self.padding,
-                                    data_format=self.data_format)
+                                             padding=self.padding,
+                                             data_format=self.data_format)
 
     def get_config(self):
         config = {'padding': self.padding,
                   'data_format': self.data_format}
         base_config = super(ReflectionPadding2D, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
+
 
 if __name__ == "__main__":
     input = Input(shape=(256, 256, 3))

@@ -2,15 +2,15 @@ import os
 import datetime
 import click
 import numpy as np
-from PIL import Image
 
 from utils import load_images
-from losses import adversarial_loss, generator_loss, wasserstein_loss, perceptual_loss, perceptual_loss_100
-from model import generator_model, discriminator_model, generator_containing_discriminator, generator_containing_discriminator_multiple_outputs
+from losses import wasserstein_loss, perceptual_loss
+from model import generator_model, discriminator_model, generator_containing_discriminator_multiple_outputs
 
 from keras.optimizers import Adam
 
 BASE_DIR = 'weights/'
+
 
 def save_all_weights(d, g, epoch_number, current_loss):
     now = datetime.datetime.now()
@@ -29,7 +29,6 @@ def train_multiple_outputs(n_images, batch_size, epoch_num, critic_updates=5):
     d = discriminator_model()
     d_on_g = generator_containing_discriminator_multiple_outputs(g, d)
 
-    g_opt = Adam(lr=1E-4, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
     d_opt = Adam(lr=1E-4, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
     d_on_g_opt = Adam(lr=1E-4, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
 
@@ -41,7 +40,6 @@ def train_multiple_outputs(n_images, batch_size, epoch_num, critic_updates=5):
     d_on_g.compile(optimizer=d_on_g_opt, loss=loss, loss_weights=loss_weights)
     d.trainable = True
 
-    first = True
     output_true_batch, output_false_batch = np.ones((batch_size, 1)), np.zeros((batch_size, 1))
 
     for epoch in range(epoch_num):
@@ -78,6 +76,7 @@ def train_multiple_outputs(n_images, batch_size, epoch_num, critic_updates=5):
             f.write('{} - {} - {}\n'.format(epoch, np.mean(d_losses), np.mean(d_on_g_losses)))
 
         save_all_weights(d, g, epoch, int(np.mean(d_on_g_losses)))
+
 
 @click.command()
 @click.option('--n_images', default=-1, help='Number of images to load for training')

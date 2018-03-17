@@ -1,12 +1,9 @@
-from keras.layers import Input, concatenate, Activation, Add
+from keras.layers import Input, Activation, Add
 from keras.layers.advanced_activations import LeakyReLU
-from keras.layers.convolutional import Conv2D, Convolution2D, Conv2DTranspose
-from keras.layers.core import Dropout, Dense, Flatten, Lambda
-from keras.layers.merge import Average
+from keras.layers.convolutional import Conv2D, Conv2DTranspose
+from keras.layers.core import Dense, Flatten, Lambda
 from keras.layers.normalization import BatchNormalization
 from keras.models import Model
-
-import keras.backend as K
 
 from layer_utils import ReflectionPadding2D, res_block
 
@@ -31,14 +28,14 @@ def generator_model():
     inputs = Input(shape=image_shape)
 
     x = ReflectionPadding2D((3, 3))(inputs)
-    x = Conv2D(filters=ngf, kernel_size=(7,7), padding='valid')(x)
+    x = Conv2D(filters=ngf, kernel_size=(7, 7), padding='valid')(x)
     x = BatchNormalization()(x)
     x = Activation('relu')(x)
 
     n_downsampling = 2
     for i in range(n_downsampling):
         mult = 2**i
-        x = Conv2D(filters=ngf*mult*2, kernel_size=(3,3), strides=2, padding='same')(x)
+        x = Conv2D(filters=ngf*mult*2, kernel_size=(3, 3), strides=2, padding='same')(x)
         x = BatchNormalization()(x)
         x = Activation('relu')(x)
 
@@ -48,12 +45,12 @@ def generator_model():
 
     for i in range(n_downsampling):
         mult = 2**(n_downsampling - i)
-        x = Conv2DTranspose(filters=int(ngf * mult / 2), kernel_size=(3,3), strides=2, padding='same')(x)
+        x = Conv2DTranspose(filters=int(ngf * mult / 2), kernel_size=(3, 3), strides=2, padding='same')(x)
         x = BatchNormalization()(x)
         x = Activation('relu')(x)
 
-    x = ReflectionPadding2D((3,3))(x)
-    x = Conv2D(filters=output_nc, kernel_size=(7,7), padding='valid')(x)
+    x = ReflectionPadding2D((3, 3))(x)
+    x = Conv2D(filters=output_nc, kernel_size=(7, 7), padding='valid')(x)
     x = Activation('tanh')(x)
 
     outputs = Add()([x, inputs])
@@ -69,22 +66,22 @@ def discriminator_model():
     n_layers, use_sigmoid = 3, False
     inputs = Input(shape=input_shape_discriminator)
 
-    x = Conv2D(filters=ndf, kernel_size=(4,4), strides=2, padding='same')(inputs)
+    x = Conv2D(filters=ndf, kernel_size=(4, 4), strides=2, padding='same')(inputs)
     x = LeakyReLU(0.2)(x)
 
     nf_mult, nf_mult_prev = 1, 1
     for n in range(n_layers):
         nf_mult_prev, nf_mult = nf_mult, min(2**n, 8)
-        x = Conv2D(filters=ndf*nf_mult, kernel_size=(4,4), strides=2, padding='same')(x)
+        x = Conv2D(filters=ndf*nf_mult, kernel_size=(4, 4), strides=2, padding='same')(x)
         x = BatchNormalization()(x)
         x = LeakyReLU(0.2)(x)
 
     nf_mult_prev, nf_mult = nf_mult, min(2**n_layers, 8)
-    x = Conv2D(filters=ndf*nf_mult, kernel_size=(4,4), strides=1, padding='same')(x)
+    x = Conv2D(filters=ndf*nf_mult, kernel_size=(4, 4), strides=1, padding='same')(x)
     x = BatchNormalization()(x)
     x = LeakyReLU(0.2)(x)
 
-    x = Conv2D(filters=1, kernel_size=(4,4), strides=1, padding='same')(x)
+    x = Conv2D(filters=1, kernel_size=(4, 4), strides=1, padding='same')(x)
     if use_sigmoid:
         x = Activation('sigmoid')(x)
 

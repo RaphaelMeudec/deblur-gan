@@ -1,9 +1,7 @@
-import os
 import numpy as np
 from PIL import Image
 import click
 
-import data_utils
 from model import generator_model
 from utils import load_images, deprocess_image
 
@@ -17,11 +15,6 @@ def test(batch_size):
     generated = np.array([deprocess_image(img) for img in generated_images])
     x_test = deprocess_image(x_test)
     y_test = deprocess_image(y_test)
-
-    print("Type Min Max")
-    print("Full {} {}".format(np.min(x_test), np.max(x_test)))
-    print("Blur {} {}".format(np.min(y_test), np.max(y_test)))
-    print("Gene {} {}".format(np.min(generated), np.max(generated)))
 
     for i in range(generated_images.shape[0]):
         y = y_test[i, :, :, :]

@@ -17,9 +17,7 @@ def perceptual_loss_100(y_true, y_pred):
 def perceptual_loss(y_true, y_pred):
     vgg = VGG16(include_top=False, weights='imagenet', input_shape=image_shape)
     loss_model = Model(inputs=vgg.input, outputs=vgg.get_layer('block3_conv3').output)
-    # let the loss model can't be trained
     loss_model.trainable = False
-    # loss_model.summary()
     return K.mean(K.square(loss_model(y_true) - loss_model(y_pred)))
 
 

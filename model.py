@@ -6,7 +6,8 @@ from keras.layers.normalization import BatchNormalization
 from keras.models import Model
 
 from layer_utils import ReflectionPadding2D, res_block
-
+from subpixel import SubpixelConv2D
+from keras.layers.convolutional import UpSampling2D
 # the paper defined hyper-parameter:chr
 channel_rate = 64
 # Note the image_shape must be multiple of patch_shape
@@ -45,12 +46,14 @@ def generator_model():
 
     for i in range(n_downsampling):
         mult = 2**(n_downsampling - i)
-        x = Conv2DTranspose(filters=int(ngf * mult / 2), kernel_size=(3, 3), strides=2, padding='same')(x)
+#        x = Conv2DTranspose(filters=int(ngf * mult / 2), kernel_size=(3, 3), strides=2, padding='same')(x)
+        x = UpSampling2D()(x)
+        x = Conv2D(filters=int(ngf * mult / 2),kernel_size=(3,3),padding='same')(x)       
         x = BatchNormalization()(x)
         x = Activation('relu')(x)
 
-    x = ReflectionPadding2D((3, 3))(x)
-    x = Conv2D(filters=output_nc, kernel_size=(7, 7), padding='valid')(x)
+#    x = ReflectionPadding2D((3, 3))(x)
+    x = Conv2D(filters=output_nc, kernel_size=(9, 9), padding='same')(x)
     x = Activation('tanh')(x)
 
     outputs = Add()([x, inputs])

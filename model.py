@@ -1,6 +1,6 @@
-from keras.layers import Input, Activation, Add
+from keras.layers import Input, Activation, Add, UpSampling2D
 from keras.layers.advanced_activations import LeakyReLU
-from keras.layers.convolutional import Conv2D, Conv2DTranspose
+from keras.layers.convolutional import Conv2D
 from keras.layers.core import Dense, Flatten, Lambda
 from keras.layers.normalization import BatchNormalization
 from keras.models import Model
@@ -45,7 +45,9 @@ def generator_model():
 
     for i in range(n_downsampling):
         mult = 2**(n_downsampling - i)
-        x = Conv2DTranspose(filters=int(ngf * mult / 2), kernel_size=(3, 3), strides=2, padding='same')(x)
+        # x = Conv2DTranspose(filters=int(ngf * mult / 2), kernel_size=(3, 3), strides=2, padding='same')(x)
+        x = UpSampling2D()(x)
+        x = Conv2D(filters=int(ngf * mult / 2), kernel_size=(3, 3), padding='same')(x)
         x = BatchNormalization()(x)
         x = Activation('relu')(x)
 

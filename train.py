@@ -40,7 +40,7 @@ def train_multiple_outputs(n_images, batch_size, epoch_num, critic_updates=5):
     d_on_g.compile(optimizer=d_on_g_opt, loss=loss, loss_weights=loss_weights)
     d.trainable = True
 
-    output_true_batch, output_false_batch = np.ones((batch_size, 1)), np.zeros((batch_size, 1))
+    output_true_batch, output_false_batch = np.ones((batch_size, 1)), -np.ones((batch_size, 1))
 
     for epoch in range(epoch_num):
         print('epoch: {}/{}'.format(epoch, epoch_num))

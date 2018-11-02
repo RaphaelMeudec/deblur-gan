@@ -14,7 +14,7 @@ def is_an_image_file(filename):
 
 
 def list_image_files(directory):
-    files = os.listdir(directory)
+    files = sorted(os.listdir(directory))
     return [os.path.join(directory, f) for f in files if is_an_image_file(f)]
 
 

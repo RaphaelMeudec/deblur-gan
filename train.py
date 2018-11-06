@@ -45,10 +45,7 @@ def train_multiple_outputs(n_images, batch_size, log_dir, epoch_num, critic_upda
     log_path = './logs'
     tensorboard_callback = TensorBoard(log_path)
 
-    for epoch in range(epoch_num):
-        print('epoch: {}/{}'.format(epoch, epoch_num))
-        print('batches: {}'.format(x_train.shape[0] / batch_size))
-
+    for epoch in tqdm.tqdm(range(epoch_num)):
         permutated_indexes = np.random.permutation(x_train.shape[0])
 
         d_losses = []
@@ -65,13 +62,11 @@ def train_multiple_outputs(n_images, batch_size, log_dir, epoch_num, critic_upda
                 d_loss_fake = d.train_on_batch(generated_images, output_false_batch)
                 d_loss = 0.5 * np.add(d_loss_fake, d_loss_real)
                 d_losses.append(d_loss)
-            print('batch {} d_loss : {}'.format(index+1, np.mean(d_losses)))
 
             d.trainable = False
 
             d_on_g_loss = d_on_g.train_on_batch(image_blur_batch, [image_full_batch, output_true_batch])
             d_on_g_losses.append(d_on_g_loss)
-            print('batch {} d_on_g_loss : {}'.format(index+1, d_on_g_loss))
 
             d.trainable = True
 

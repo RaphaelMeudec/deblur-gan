@@ -72,9 +72,9 @@ def train_multiple_outputs(n_images, batch_size, log_dir, epoch_num, critic_upda
 
             d.trainable = True
 
-        write_log(tensorboard_callback, ['g_loss', 'd_on_g_loss'], [np.mean(d_losses), np.mean(d_on_g_loss)], epoch_num)
-
-        with open('log.txt', 'a') as f:
+        # write_log(tensorboard_callback, ['g_loss', 'd_on_g_loss'], [np.mean(d_losses), np.mean(d_on_g_losses)], epoch_num)
+        print(np.mean(d_losses), np.mean(d_on_g_losses))
+        with open('log.txt', 'a+') as f:
             f.write('{} - {} - {}\n'.format(epoch, np.mean(d_losses), np.mean(d_on_g_losses)))
 
         save_all_weights(d, g, epoch, int(np.mean(d_on_g_losses)))

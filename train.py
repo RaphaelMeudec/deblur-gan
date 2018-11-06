@@ -2,11 +2,13 @@ import os
 import datetime
 import click
 import numpy as np
+import tqdm
 
-from utils import load_images
+from utils import load_images, write_log
 from losses import wasserstein_loss, perceptual_loss
 from model import generator_model, discriminator_model, generator_containing_discriminator_multiple_outputs
 
+from keras.callback import TensorBoard
 from keras.optimizers import Adam
 
 BASE_DIR = 'weights/'

@@ -23,7 +23,7 @@ python organize_gopro_dataset.py --dir_in=GOPRO_Large --dir_out=images
 # Training
 
 ```
-python train.py --n_images=512 --batch_size=16
+python train.py --n_images=512 --batch_size=16 --log_dir /path/to/log/dir
 ```
 
 Use `python train.py --help` for all options

@@ -21,7 +21,7 @@ def save_all_weights(d, g, epoch_number, current_loss):
     d.save_weights(os.path.join(save_dir, 'discriminator_{}.h5'.format(epoch_number)), True)
 
 
-def train_multiple_outputs(n_images, batch_size, epoch_num, critic_updates=5):
+def train_multiple_outputs(n_images, batch_size, log_dir, epoch_num, critic_updates=5):
     data = load_images('./images/train', n_images)
     y_train, x_train = data['B'], data['A']
 
@@ -41,6 +41,9 @@ def train_multiple_outputs(n_images, batch_size, epoch_num, critic_updates=5):
     d.trainable = True
 
     output_true_batch, output_false_batch = np.ones((batch_size, 1)), -np.ones((batch_size, 1))
+
+    log_path = './logs'
+    tensorboard_callback = TensorBoard(log_path)
 
     for epoch in range(epoch_num):
         print('epoch: {}/{}'.format(epoch, epoch_num))
@@ -72,6 +75,8 @@ def train_multiple_outputs(n_images, batch_size, epoch_num, critic_updates=5):
 
             d.trainable = True
 
+        write_log(tensorboard_callback, ['g_loss', 'd_on_g_loss'], [np.mean(d_losses), np.mean(d_on_g_loss)], epoch_num)
+
         with open('log.txt', 'a') as f:
             f.write('{} - {} - {}\n'.format(epoch, np.mean(d_losses), np.mean(d_on_g_losses)))
 
@@ -81,10 +86,11 @@ def train_multiple_outputs(n_images, batch_size, epoch_num, critic_updates=5):
 @click.command()
 @click.option('--n_images', default=-1, help='Number of images to load for training')
 @click.option('--batch_size', default=16, help='Size of batch')
+@click.option('--log_dir', required=True, help='Path to the log_dir for Tensorboard')
 @click.option('--epoch_num', default=4, help='Number of epochs for training')
 @click.option('--critic_updates', default=5, help='Number of discriminator training')
-def train_command(n_images, batch_size, epoch_num, critic_updates):
-    return train_multiple_outputs(n_images, batch_size, epoch_num, critic_updates)
+def train_command(n_images, batch_size, log_dir, epoch_num, critic_updates):
+    return train_multiple_outputs(n_images, batch_size, log_dir, epoch_num, critic_updates)
 
 
 if __name__ == '__main__':

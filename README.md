@@ -1,6 +1,8 @@
 # What is this repo ?
 
-This repository is a Keras implementation of [Deblur GAN](https://arxiv.org/pdf/1711.07064.pdf). You can find a tutorial on how it works on [Medium](https://blog.sicara.com/keras-generative-adversarial-networks-image-deblurring-45e3ab6977b5).
+This repository is a Keras implementation of [Deblur GAN](https://arxiv.org/pdf/1711.07064.pdf). You can find a tutorial on how it works on [Medium](https://blog.sicara.com/keras-generative-adversarial-networks-image-deblurring-45e3ab6977b5). Below is a sample result (from left to right: sharp image, blurred image, deblurred image)
+
+![Sample results](./sample/results0.png)
 
 # Installation
 
@@ -8,6 +10,7 @@ This repository is a Keras implementation of [Deblur GAN](https://arxiv.org/pdf/
 virtualenv venv -p python3
 . venv/bin/activate
 pip install -r requirements.txt
+pip install -e .
 ```
 
 # Dataset
@@ -16,28 +19,28 @@ Get the [GOPRO dataset](https://drive.google.com/file/d/1H0PIXvJH4c40pk7ou6nAwox
 
 Use:
 ```
-python organize_gopro_dataset.py --dir_in=GOPRO_Large --dir_out=images
+python scripts/organize_gopro_dataset.py --dir_in=GOPRO_Large --dir_out=images
 ```
 
 
 # Training
 
 ```
-python train.py --n_images=512 --batch_size=16 --log_dir /path/to/log/dir
+python scripts/train.py --n_images=512 --batch_size=16 --log_dir /path/to/log/dir
 ```
 
-Use `python train.py --help` for all options
+Use `python scripts/train.py --help` for all options
 
 # Testing
 
 ```
-python test.py
+python scripts/test.py
 ```
 
-Use `python test.py --help` for all options
+Use `python scripts/test.py --help` for all options
 
 # Deblur your own image
 
 ```
-python deblur_image.py --image_path=path/to/image
+python scripts/deblur_image.py --image_path=path/to/image
 ```

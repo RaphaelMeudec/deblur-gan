@@ -4,9 +4,9 @@ import click
 import numpy as np
 import tqdm
 
-from utils import load_images, write_log
-from losses import wasserstein_loss, perceptual_loss
-from model import generator_model, discriminator_model, generator_containing_discriminator_multiple_outputs
+from deblurgan.utils import load_images, write_log
+from deblurgan.losses import wasserstein_loss, perceptual_loss
+from deblurgan.model import generator_model, discriminator_model, generator_containing_discriminator_multiple_outputs
 
 from keras.callbacks import TensorBoard
 from keras.optimizers import Adam

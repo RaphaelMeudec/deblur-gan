@@ -5,7 +5,7 @@ from keras.layers.core import Dense, Flatten, Lambda
 from keras.layers.normalization import BatchNormalization
 from keras.models import Model
 
-from layer_utils import ReflectionPadding2D, res_block
+from .layer_utils import ReflectionPadding2D, res_block
 
 # the paper defined hyper-parameter:chr
 channel_rate = 64

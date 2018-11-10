@@ -2,8 +2,8 @@ import numpy as np
 from PIL import Image
 import click
 
-from model import generator_model
-from utils import load_image, deprocess_image, preprocess_image
+from deblurgan.model import generator_model
+from deblurgan.utils import load_image, deprocess_image, preprocess_image
 
 
 def deblur(image_path):

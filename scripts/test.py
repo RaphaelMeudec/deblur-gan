@@ -2,8 +2,8 @@ import numpy as np
 from PIL import Image
 import click
 
-from model import generator_model
-from utils import load_images, deprocess_image
+from deblurgan.model import generator_model
+from deblurgan.utils import load_images, deprocess_image
 
 
 def test(batch_size):

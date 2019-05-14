@@ -9,7 +9,7 @@ This repository is a Keras implementation of [Deblur GAN](https://arxiv.org/pdf/
 ```
 virtualenv venv -p python3
 . venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements/requirements.txt
 pip install -e .
 ```
 

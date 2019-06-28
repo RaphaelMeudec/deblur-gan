@@ -42,5 +42,5 @@ Use `python scripts/test.py --help` for all options
 # Deblur your own image
 
 ```
-python scripts/deblur_image.py --image_path=path/to/image
+python scripts/deblur_image.py --weight_path=/path/to/generator.h5 --input_dir=/path/to/image/dir --output_dir=/path/to/deblurred/dir
 ```

@@ -9,12 +9,10 @@ from deblurgan.utils import load_image, deprocess_image, preprocess_image
 
 
 def deblur(weight_path, input_dir, output_dir):
-	input_dir = input_dir if input_dir[-1] == '/' else input_dir + '/'
-	output_dir = output_dir if output_dir[-1] == '/' else output_dir + '/'
 	g = generator_model()
 	g.load_weights(weight_path)
 	for image_name in os.listdir(input_dir):
-	    image = np.array([preprocess_image(load_image(input_dir + image_name))])
+	    image = np.array([preprocess_image(load_image(os.path.join(input_dir, image_name)))])
 	    x_test = image
 	    generated_images = g.predict(x=x_test)
 	    generated = np.array([deprocess_image(img) for img in generated_images])
@@ -24,7 +22,7 @@ def deblur(weight_path, input_dir, output_dir):
 	        img = generated[i, :, :, :]
 	        output = np.concatenate((x, img), axis=1)
 	        im = Image.fromarray(output.astype(np.uint8))
-	        im.save(output_dir + image_name)
+	        im.save(os.path.join(output_dir, image_name))
 
 
 @click.command()

@@ -44,3 +44,8 @@ Use `python scripts/test.py --help` for all options
 ```
 python scripts/deblur_image.py --weight_path=/path/to/generator.h5 --input_dir=/path/to/image/dir --output_dir=/path/to/deblurred/dir
 ```
+# Deblur a video
+
+```
+python scripts/deblur_video.py --weight_path=/path/to/generator.h5 --input_video=./input.avi --output_video=./output.avi
+```

@@ -10,26 +10,13 @@ from deblurgan.utils import deprocess_image, preprocess_image
 fourcc = cv2.VideoWriter_fourcc(*'XVID')
 
 
-def deblur(weight_path, input_frame):
-    g = generator_model()
-    g.load_weights(weight_path)
-    image = np.array([preprocess_image(Image.fromarray(input_frame))])
-    x_test = image
-    generated_images = g.predict(x=x_test)
-    generated = np.array([deprocess_image(img) for img in generated_images])
-    x_test = deprocess_image(x_test)
-    for i in range(generated_images.shape[0]):
-        x = x_test[i, :, :, :]
-        img = generated[i, :, :, :]
-        output_frame = np.concatenate((x, img), axis=1)
-    # Hardcoded bacuse shape of output numpy array is (256, 512, 3)
-    return output_frame[:, 256:, :]
-
 @click.command()
 @click.option('--weight_path', help='Model weight')
 @click.option('--input_video', help='Video to deblur path')
 @click.option('--output_video', help='Deblurred video path')
 def deblur_video(weight_path, input_video, output_video):
+    g = generator_model()
+    g.load_weights(weight_path)
     # Read input video
     cap = cv2.VideoCapture(input_video)
     # Get frame count, possible apriori if reading a file
@@ -38,8 +25,10 @@ def deblur_video(weight_path, input_video, output_video):
     fps = int(cap.get(cv2.CAP_PROP_FPS))
     w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    # Desired shape into which output is to be reshaped
+    desired_shape = (512, 288)
     # output writer object
-    out = cv2.VideoWriter(output_video, fourcc, fps, (w, h))
+    out = cv2.VideoWriter(output_video, fourcc, fps, desired_shape)
     # Frame number
     ctr = 1
     # While frame keep coming in
@@ -49,8 +38,22 @@ def deblur_video(weight_path, input_video, output_video):
         # Read input frame by frame
         ret, in_frame = cap.read()
         if ret:
-            out_frame = deblur(weight_path, in_frame)
-            out.write(cv2.resize(out_frame, (w, h), interpolation=cv2.INTER_CUBIC))
+            # Shape = (w, h), np array = rows (height), cols (width)
+            in_frame1 = in_frame[60:-60, :, :]
+            # Out_frame is the 256x256 de-blurred numpy array frame
+            image = np.array([preprocess_image(Image.fromarray(in_frame1))])
+            generated_images = g.predict(x=image)
+            generated = np.array([deprocess_image(img) for img in generated_images])
+            image = deprocess_image(image)
+            for i in range(generated_images.shape[0]):
+                x = image[i, :, :, :]
+                img = generated[i, :, :, :]
+                output_frame = np.concatenate((x, img), axis=1)
+            # Hardcoded [:, 256, :] because shape of output numpy array is (256, 512, 3)
+            # out_cv is still a numpy array since cv2 keeps it as numpy after reshape instead of converting to cv2 form
+            out_cv = cv2.resize(output_frame[:, 256:, :], desired_shape, interpolation=cv2.INTER_CUBIC)
+            # We can write a numpy array directly and it is written with a transformed shape
+            out.write(out_cv)
         else:
             break
         ctr += 1
